@@ -47,7 +47,13 @@ class Row:
                 return r
         return None
 
-    def find_seats(self, start_id=None, num_req=1):
+    def order_seats(self, cid_list):
+        """give order_seats a list of cids in the row, buys them"""
+        for cid in cid_list:
+            seat = self.search_row(cid)
+            seat.bought_seat()
+
+    def find_seats(self, start_id=None, req_num=1):
         """creates a order of seats for a num requested"""
         order = list()
         if start_id:
@@ -58,7 +64,7 @@ class Row:
         while r.r_seat is not None:
             if r.check_availability():
                 order.append(r)
-                if len(order) == num_req:
+                if len(order) == req_num:
                     return order
             else:
                 order = list()

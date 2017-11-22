@@ -1,19 +1,18 @@
-import uuid
 from thalia.row import Row
+from helpers.helper import ID
 
 
-class Section:
+class Section(ID):
     """Section class: holds seats and row values"""
     def __init__(self, sid=None, price=None, rows=list(), name=None):
         """Initialization of Section Class"""
-        self.__sid = sid if sid else uuid.uuid4().hex
+        ID.__init__(self)
+        if sid:
+            self.set_id(sid)
         self.__name = name
         self.__price = price
         self.__rows = list()
         self.create_section(rows)
-
-    def get_sid(self):
-        return self.__sid
 
     def get_name(self):
         return self.__name
@@ -27,11 +26,6 @@ class Section:
     def set_price(self, new_price):
         self.__price = new_price
 
-    def check_id(self, other_sid):
-        if str(self.get_sid()) == str(other_sid):
-            return True
-        return False
-
     def create_section(self, rows):
         if not self.__rows:
             row_list = list()
@@ -40,6 +34,12 @@ class Section:
                 r_created = Row(row=r['row'], seats=r['seats'])
                 row_list.append(r_created)
             self.__rows = row_list
+
+    def find_seats(self, start_id=None, req_num=1):
+        for row in self.get_rows():
+            order = row.find_seats(start_id=start_id, req_num=req_num)
+            if order is not None:
+                return order
 
     def to_dict(self):
         return {

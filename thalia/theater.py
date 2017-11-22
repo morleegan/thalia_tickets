@@ -246,5 +246,10 @@ class Theater:
                     create_seating.append(sec)
         self.set_seating(create_seating)
 
+    def find_section(self, sid):
+        for s in self.get_seating():
+            if s.check_id(sid):
+                return s
+
     def to_dict(self):
         return list(map(lambda x: x.to_dict(), self.get_seating()))

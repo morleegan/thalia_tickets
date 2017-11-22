@@ -1,14 +1,14 @@
 import uuid
 import datetime
 
-class Show:
+from helpers.helper import ID
+
+
+class Show(ID):
     def __init__(self, show_info=None, seating_info=None):
-        self.__wid = uuid.uuid4().hex
+        ID.__init__(self)
         self.__show_info = show_info
         self.__seating_info = seating_info
-
-    def get_wid(self):
-        return self.__wid
 
     def get_show_info(self):
         return self.__show_info
@@ -22,14 +22,9 @@ class Show:
     def set_seating(self, new_info):
         self.__seating_info = new_info
 
-    def check_id(self, wid):
-        if str(wid) == str(self.get_wid()):
-            return True
-        return False
-
     def to_dict(self):
         return {
-            "wid": self.get_wid(),
+            "wid": self.get_id(),
             "show_info": self.get_show_info().to_dict() if not isinstance(self.get_show_info(),
                                                                           dict) else self.get_show_info(),
             "seating_info": self.get_seating().to_dict() if not isinstance(self.get_seating(),

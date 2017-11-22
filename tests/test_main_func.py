@@ -11,7 +11,7 @@ def test_delete_key():
     assert Helper.delete_keys(dic, ['hello']) == {'hi': 'hello'}
 
 def test_get_spec():
-    wid = show2.get_wid()
+    wid = show2.get_id()
     assert Helper.get_specific(wid, show_list) == show2
 
 if __name__ == '__main__':

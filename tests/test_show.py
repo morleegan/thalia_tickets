@@ -1,14 +1,16 @@
 import datetime
 from thalia.show import Show, ShowInfo
+from thalia.theater import Theater
 
-test_show = Show(show_info=1, seating_info=2)
+test_show = Show(show_info=2, seating_info=2)
 showinfo = ShowInfo(name="test", web="test")
+theater = Theater()
+test_show2 = Show(show_info=showinfo, seating_info=theater)
 
 
 def test_show_get():
-    assert test_show.get_show_info() == 1
+    assert test_show.get_show_info() == 2
     assert test_show.get_seating() == 2
-    assert test_show.get_wid() is not None
 
 
 def test_show_set():
@@ -19,8 +21,7 @@ def test_show_set():
 
 
 def test_show_to_dict():
-    test_show.set_show_info(showinfo)
-    assert sorted(test_show.to_dict().keys()) == ["seating_info", "show_info", "wid"]
+    assert sorted(test_show2.to_dict().keys()) == ["seating_info", "show_info", "wid"]
 
 
 def test_show_info_get():

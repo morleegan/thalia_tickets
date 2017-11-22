@@ -19,12 +19,12 @@ def test_search_row():
 
 
 def test_find_seats():
-    test1 = row1.find_seats(num_req=3)
+    test1 = row1.find_seats(req_num=3)
 
     assert test1[0].get_name() == 5
     assert test1[1].get_name() == 4
     assert test1[2].get_name() == 3
-    assert row1.find_seats(num_req=8) is None
+    assert row1.find_seats(req_num=8) is None
 
 
 def test_get_as_list():
@@ -33,7 +33,8 @@ def test_get_as_list():
 
 
 def test_check_availability():
-    assert s1.check_availability() is True
+    s2 = Seat(1)
+    assert s2.check_availability() is True
     s1.bought_seat()
     assert s1.check_availability() is False
 
@@ -46,8 +47,23 @@ def test_bought_seat():
 def test_seat_to_dict():
     assert sorted(s1.to_dict().keys()) == ['cid', 'name', 'status']
 
+
 def test_row_to_dict():
     assert sorted(row1.to_dict().keys()) == ['row', 'seats']
+
+
+def test_order_seats():
+    seats = row1.find_seats(req_num=2)
+    cids = list(map(lambda x: x.get_cid(), seats))
+    row1.order_seats(cids)
+
+    r = row1.get_seats()
+    if r is not None:
+        while r.r_seat is not None:
+            if r.get_cid() in cids:
+                assert r.check_availability() is False
+            r = r.r_seat
+
 
 if __name__ == '__main__':
     test_get_row_number()
@@ -58,3 +74,4 @@ if __name__ == '__main__':
     test_bought_seat()
     test_seat_to_dict()
     test_row_to_dict()
+    test_order_seats()

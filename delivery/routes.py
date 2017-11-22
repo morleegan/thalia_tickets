@@ -30,7 +30,9 @@ def req_view(wid):
         content = request.get_json()
         return jsonify(main.put_show(wid=wid, show_info=content['show_info'], seating=content['seating_info']))
     else:
-        return jsonify(main.get_shows(wid))
+        s = main.get_shows(wid)
+        s['seating_info'] = list(map(lambda x: Helper.delete_keys(x, ['section_name', 'seating']), s['seating_info']))
+        return jsonify(s)
 
 
 @show.route('/shows/<wid>/sections', methods=['GET'])
@@ -62,13 +64,16 @@ def seating_view_all():
         wid = request.args['show']
         sid = request.args['section']
         count = request.args['count']
-        # return jsonify(emu.show_seats_request(wid=wid, sid=sid, count=count))
+        return jsonify(main.show_seats_request(wid=wid, sid=sid, count=count))
     return jsonify(main.get_seating())
 
 
 @seating.route('/seating/<sid>', methods=['GET'])
 def req_view(sid):
-    return jsonify(main.get_seating(sid=sid))
+    s = main.get_seating(sid=sid)
+    for r in s['seating']:
+        r['seats'] = sorted(list(map(lambda x: x['name'], r['seats'])))
+    return jsonify(s)
 
 
 # """ Ticket Controller """
@@ -118,17 +123,21 @@ def req_view(sid):
 #
 #
 # """ Order Controller """
-#
-#
-# @order.route('/orders', methods=['GET', 'POST'])
-# def req_view_all():
-#     if request.method == 'POST':
-#         content = request.get_json()
-#         return jsonify(emu.create_order(content))
-#     else:
-#         return jsonify(emu.order_json())
-#
-#
+
+
+@order.route('/orders', methods=['GET', 'POST'])
+def req_view_all():
+    if request.method == 'POST':
+        content = request.get_json()
+        wid = content['wid']
+        sid = content['sid']
+        seats = content['seats']
+        patron = content['patron']
+        return jsonify(main.post_order(wid, sid, seats, patron))
+    else:
+        return jsonify(main.get_orders())
+
+
 # @order.route('/orders/<oid>', methods=['GET'])
 # def req_view(oid):
 #     # TODO: solve the finding of order when you have oid, incorrect call
