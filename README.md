@@ -1,16 +1,11 @@
 # Thalia Tickets 
 
-CS445 project, Object Oriented Programming and Design 
+API: http://www.cs.iit.edu/~virgil/cs445/mail.fall2017/project/project-api.html
 
 ## Application:
     python3 thalia.py 
     localhost:8080/thalia
 Follow the requirements.txt to know what you need to run all of the parts. 
-    
-## Acceptance testing:
-    python3 run-test.py 
-    
-In the acceptance testing folder, written by TA. 
 
 ## Unit testing:
     nose2 

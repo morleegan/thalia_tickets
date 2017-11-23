@@ -30,7 +30,7 @@ class Emulate:
         o = OccupancyReport()
         d = DonatedReport()
         reports = [o, r, d]
-        return list(map(lambda x: x.to_dict(), reports))
+        return reports
 
     def get_tickets(self, tid=None):
         if tid is not None:
@@ -42,9 +42,9 @@ class Emulate:
             order = Helper.get_specific(oid, self.orders_list)
             if order:
                 show = self.get_shows(order.get_wid())
+                show = show.to_dict()
                 o_dict = order.to_dict()
-                del o_dict['sid']
-                del o_dict['number_of_tickets']
+                o_dict = Helper.delete_keys(o_dict, ['sid', 'number_of_tickets'])
                 o_dict['tickets'] = list(map(lambda t: Helper.delete_keys(t, ['cid', 'seat', 'price']),
                                              o_dict['tickets']))
                 o_dict['show_info'] = show['show_info']
@@ -57,20 +57,33 @@ class Emulate:
                     o_dict = o.to_dict()
                     si_dict = s.get_show_info()
                     o_dict['show_info'] = si_dict
-                    del o_dict['tickets']
-                    del o_dict['sid']
+                    o_dict = Helper.delete_keys(o_dict, ['sid', 'tickets'])
                     orders.append(o_dict)
         return orders
+
+    def order_by_date(self, start='20000220', end='22000220'):
+        orders = list()
+        for o in self.orders_list:
+            if o.check_date(start=start, end=end):
+                for s in self.shows_list:
+                    if s.check_id(o.get_wid()):
+                        o_dict = o.to_dict()
+                        si_dict = s.get_show_info()
+                        o_dict['show_info'] = si_dict
+                        o_dict = Helper.delete_keys(o_dict, ['sid', 'tickets'])
+                        orders.append(o_dict)
+            return orders
 
     def get_shows(self, wid=None):
         if wid is not None:
             show = Helper.get_specific(wid, self.shows_list)
-            return show.to_dict() if show else "does not exist"
+            return show if show else "does not exist"
         return list(map(lambda x: Helper.delete_keys(x.to_dict(), ['seating_info']), self.shows_list)) if \
             self.shows_list else list()
 
     def get_show_section(self, wid=0):
         show_dict = self.get_shows(wid=wid)
+        show_dict = show_dict.to_dict()
         if show_dict == "does not exist":
             return show_dict
         sect = show_dict.get('seating_info', None)
@@ -80,6 +93,7 @@ class Emulate:
 
     def get_show_section_by_id(self, wid=0, sid=0):
         show_sec = self.get_shows(wid=wid)
+        show_sec = show_sec.to_dict()
         if show_sec == "does not exist":
             return show_sec
         seating = show_sec.get('seating_info')
@@ -144,27 +158,27 @@ class Emulate:
         return "does not exist"
 
     def post_order(self, wid=None, sid=None, seats=None, patron=None):
-        patron = Patron(name=patron['name'], phone=patron['phone'], email=patron['email'], cc_exp=patron['cc_expiration_date'],
-                        cc_num=patron['cc_number'], bill_add=patron['billing_address'])
+        patron = Patron(name=patron['name'], phone=patron['phone'], email=patron['email'], cc_num=patron['cc_number'],
+                        cc_exp=patron['cc_expiration_date'], bill_add=patron['billing_address'])
         s = self.get_show_section_by_id(wid, sid)
         tickets = list(map(lambda x: Ticket(wid=wid, sid=sid, seat=x['seat'], cid=x['cid'], price=s['price']), seats))
-        order = Order(wid=wid, sid=sid, tickets=tickets, patron=patron)
-
+        order = Order(wid=wid, tickets=tickets, patron=patron)
         list(map(lambda t: self.tickets_list.append(t), tickets))
         self.orders_list.append(order)
+
         order_re = order.to_dict()
         order_re['show_info'] = s['show_info']
-        del order_re['patron_info']
-        del order_re['number_of_tickets']
+        order_re = Helper.delete_keys(order_re, ['patron_info', 'number_of_tickets'])
         order_re['tickets'] = list(map(lambda t: t['tid'], order_re['tickets']))
         return order_re
 
-    def show_seats_request(self, wid=0, sid=0, count=1):
+    def show_seats_request(self, wid=0, sid=0, count=1, start_id=None):
         show = Helper.get_specific(wid, self.shows_list)
         section = show.get_seating().find_section(sid)
-        order = section.find_seats(req_num=count)
+        order = section.find_seats(req_num=count, start_id=start_id)
         if order:
             return show.to_dict()
+        return ''
 
     def search(self, topic, key):
         search_list = list()
@@ -175,4 +189,5 @@ class Emulate:
                     if s:
                         search_list.append(s)
             if search_list:
-                return {(str(topic) + 's'): list(map(lambda x: Helper.delete_keys(x.to_dict(), ['tickets', 'sid']), search_list))}
+                return {(str(topic) + 's'): list(map(lambda x: Helper.delete_keys(x.to_dict(), ['tickets', 'sid']),
+                                                     search_list))}

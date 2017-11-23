@@ -20,15 +20,15 @@ def test_search_row():
 
 def test_find_seats():
     test1 = row1.find_seats(req_num=3)
-    assert test1[0].get_name() == 5
-    assert test1[1].get_name() == 4
+    assert test1[0].get_name() == 1
+    assert test1[1].get_name() == 2
     assert test1[2].get_name() == 3
     assert row1.find_seats(req_num=8) is None
 
 
 def test_get_as_list():
     test = list(map(lambda x: x.get_name(), row1.get_seats_as_list()))
-    assert test == [5,4,3,2,1]
+    assert test == sorted([5,4,3,2,1])
 
 
 def test_check_availability():
@@ -53,15 +53,10 @@ def test_row_to_dict():
 
 def test_order_seats():
     seats = row1.find_seats(req_num=2)
-    cids = list(map(lambda x: x.get_id(), seats))
-    row1.order_seats(cids)
-
-    r = row1.get_seats()
-    if r is not None:
-        while r.r_seat is not None:
-            if r.get_id() in cids:
-                assert r.check_availability() is False
-            r = r.r_seat
+    cids = list(map(lambda x: x.get_name(), seats))
+    assert cids == [1, 2]
+    cid = row1.get_seats_as_list()[1].get_id()
+    assert list(map(lambda s: s.get_name(), row1.find_seats(req_num=3, start_id=cid))) == [2, 3, 4]
 
 
 if __name__ == '__main__':

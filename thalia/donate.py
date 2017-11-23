@@ -1,8 +1,9 @@
 from helpers.helper import ID
+from thalia.order import Patron
 
 
 class Donate(ID):
-    def __init__(self, wid=0, amount=1, patron=None):
+    def __init__(self, wid=0, amount=1, patron=Patron()):
         ID.__init__(self)
         self.__patron = patron
         self.__wid = wid

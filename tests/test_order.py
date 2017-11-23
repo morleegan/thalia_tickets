@@ -13,7 +13,6 @@ p = {
 o={
             "oid": None,
             "wid": None,
-            "sid": None,
             "show_info": None,
             "date_ordered": None,
             "order_amount": None,
@@ -22,11 +21,18 @@ o={
             "patron_info": None
 
         }
+
+t = {"tid": None,
+     "price": None,
+     "status": None,
+     "cid": None,
+     "seat": None}
+
 ticket = Ticket(price=80, cid=123, seat=10)
 ticket2 = Ticket(price=100, cid=123, seat=11)
 tickets = [ticket, ticket2]
 
-order = Order(wid=2, sid=2, tickets=tickets, patron=patron)
+order = Order(wid=2, tickets=tickets, patron=patron)
 
 
 def test_search():
@@ -34,15 +40,19 @@ def test_search():
     assert order.search('order', '2') is order
 
 
-def test_patron_to_dict():
-    assert sorted(patron.to_dict().keys()) == sorted(p.keys())
+def test_date_check():
+    assert order.check_date() is True
+    assert order.check_date(start='20000220', end='20010110') is False
+    assert order.check_date(start='20171123', end='20171123') is True
 
 
-def test_order_to_dict():
+def test_to_dict():
     assert o.keys() == order.to_dict().keys()
+    assert sorted(patron.to_dict().keys()) == sorted(p.keys())
+    assert t.keys() == ticket.to_dict().keys()
 
 
 if __name__ == '__main__':
-    test_patron_to_dict()
-    test_order_to_dict()
+    test_to_dict()
     test_search()
+    test_date_check()

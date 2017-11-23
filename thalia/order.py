@@ -1,4 +1,3 @@
-import uuid
 import datetime
 
 from helpers.helper import ID
@@ -6,16 +5,12 @@ from thalia.show import ShowInfo
 
 
 class Order(ID):
-    def __init__(self, wid=0, sid=0, tickets=list(), patron=None):
+    def __init__(self, wid=0, tickets=list(), patron=None):
         ID.__init__(self)
         self.__wid = wid
-        self.__sid = sid
         self.__tickets = tickets
         self.__patron = patron
         self.__date_ordered = datetime.datetime.today()
-
-    def get_sid(self):
-        return self.__sid
 
     def get_wid(self):
         return self.__wid
@@ -29,8 +24,10 @@ class Order(ID):
     def get_date(self):
         return self.__date_ordered
 
-    def check_id(self, oid):
-        if str(oid) == str(self.get_id()):
+    def check_date(self, start='20000220', end='20200220'):
+        start_date = datetime.datetime.strptime(start, '%Y%m%d').date()
+        end_date = datetime.datetime.strptime(end, '%Y%m%d').date()
+        if start_date <= self.get_date().date() <= end_date:
             return True
         return False
 
@@ -45,7 +42,6 @@ class Order(ID):
         return {
             "oid": self.get_id(),
             "wid": self.get_wid(),
-            "sid": self.get_sid(),
             "show_info": show.to_dict(),
             "date_ordered": str(self.get_date())[:16],
             "order_amount": self.get_total(),

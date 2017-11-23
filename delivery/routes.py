@@ -31,7 +31,7 @@ def req_view(wid):
         main.put_show(wid=wid, show_info=content['show_info'], seating=content['seating_info'])
         return ''
     else:
-        s = main.get_shows(wid)
+        s = main.get_shows(wid).to_dict()
         s['seating_info'] = list(map(lambda x: Helper.delete_keys(x, ['section_name', 'seating']), s['seating_info']))
         return jsonify(s)
 
@@ -66,8 +66,10 @@ def seating_view_all():
         wid = request.args['show']
         sid = request.args['section']
         count = request.args['count']
-        # return jsonify(main.show_seats_request(wid=wid, sid=sid, count=count))
-        return jsonify(None)
+        start_seat = None
+        if 'starting_seat_id' in request.args.keys():
+            start_seat = request.args['starting_seat_id']
+        return jsonify(main.show_seats_request(wid=wid, sid=sid, count=count, start_id=start_seat))
     return jsonify(main.get_seating())
 
 
@@ -113,7 +115,7 @@ def req_report():
 
 @report.route('/reports', methods=['GET'])
 def req_view():
-    return jsonify(main.get_reports())
+    return jsonify(list(map(lambda x: x.to_dict(), main.get_reports())))
 
 
 # @report.route('/reports/<mrid>', methods=['GET'])
@@ -137,6 +139,10 @@ def req_view_all():
         seats = content['seats']
         patron = content['patron_info']
         return jsonify(main.post_order(wid, sid, seats, patron))
+    elif ['end_date', 'start_date'] == sorted(request.args.keys()):
+        start = request.args.get('start_date', type=str)
+        end = request.args.get('end_date', type=str)
+        return jsonify(main.order_by_date(start=start, end=end))
     else:
         return jsonify(main.get_orders())
 
@@ -144,13 +150,3 @@ def req_view_all():
 @order.route('/orders/<oid>', methods=['GET'])
 def req_view(oid):
     return jsonify(main.get_orders(oid))
-
-
-# @order.route('/orders', methods=['GET'])
-# def req_order_by_dates():
-#     # ?start_date = YYYYMMDD & end_date = YYYYMMDD
-#     start = request.args.get('start_date', type=str)    # TODO: will have to parse
-#     end = request.args.get('end_date', type=str)
-#     return "start: " + start
-#
-

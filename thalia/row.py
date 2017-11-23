@@ -23,7 +23,7 @@ class Row(ID):
 
     def create_row(self, seat_list):
         """Creation of the linked list"""
-        for s in seat_list:
+        for s in sorted(seat_list, reverse=True):
             seat = Seat(seat=s)
             if self.__seats is None:
                 self.__seats = seat
