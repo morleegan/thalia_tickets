@@ -1,16 +1,13 @@
-import uuid
+from helpers.helper import ID
 
 
-class Row:
+class Row(ID):
     """Row Class: linked list implementation"""
 
     def __init__(self, row=None, seats=list()):
-        self.__row = row                # row number
+        ID.__init__(self, row)
         self.__seats = None             # list of seats
         self.create_row(seats)          # creation of row
-
-    def get_name(self):
-        return self.__row
 
     def get_seats(self):
         return self.__seats
@@ -40,10 +37,10 @@ class Row:
         r = self.get_seats()
         if r is not None:
             while r.r_seat is not None:
-                if r.get_cid() == cid:
+                if r.get_id() == cid:
                     return r
                 r = r.r_seat
-            if r.get_cid() == cid:
+            if r.get_id() == cid:
                 return r
         return None
 
@@ -73,16 +70,16 @@ class Row:
 
     def to_dict(self):
         return {
-            "row": self.get_name(),
+            "row": self.get_id(),
             "seats": list(map(lambda x: x.to_dict(), self.get_seats_as_list()))
         }
 
 
-class Seat:
+class Seat(ID):
     """Seat class: nodes of a linked list"""
     def __init__(self, seat=None):
         """Initializing Seat class: this is a single chair, created as a linked list"""
-        self.__cid = uuid.uuid4().hex
+        ID.__init__(self)
         self.__name = seat
         self.l_seat = None
         self.r_seat = None
@@ -90,9 +87,6 @@ class Seat:
 
     def get_name(self):
         return self.__name
-
-    def get_cid(self):
-        return self.__cid
 
     def get_status(self):
         return self.__status
@@ -109,7 +103,7 @@ class Seat:
 
     def to_dict(self):
         return {
-            "cid": self.get_cid(),
-            "name": self.get_name(),
+            "cid": self.get_id(),
+            "seat": self.get_name(),
             "status": self.get_status()
         }

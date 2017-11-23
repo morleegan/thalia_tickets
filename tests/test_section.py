@@ -11,7 +11,7 @@ test = [{'row': '1',
 def test_create_section():
     s.create_section(test)
     s_row = s.get_rows()
-    assert s_row[0].get_name() == str(1)
+    assert s_row[0].get_id() == str(1)
 
 
 def test_check_sid():

@@ -6,9 +6,7 @@ class Section(ID):
     """Section class: holds seats and row values"""
     def __init__(self, sid=None, price=None, rows=list(), name=None):
         """Initialization of Section Class"""
-        ID.__init__(self)
-        if sid:
-            self.set_id(sid)
+        ID.__init__(self, sid)
         self.__name = name
         self.__price = price
         self.__rows = list()
@@ -43,7 +41,7 @@ class Section(ID):
 
     def to_dict(self):
         return {
-            "sid": self.get_sid(),
+            "sid": self.get_id(),
             "section_name": self.get_name(),
             "price": self.get_price(),
             "seating": list(map(lambda x: x.to_dict(), self.get_rows())) if self.get_rows() else list()

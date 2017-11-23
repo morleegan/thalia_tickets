@@ -6,21 +6,20 @@ row1 = Row(row=1, seats=[1, 2, 3, 4, 5])
 
 
 def test_get_row_number():
-    assert row1.get_name() == 1
+    assert row1.get_id() == 1
 
 
 def test_search_row():
     s = row1.get_seats()
     s2 = s.r_seat
-    sid = s.get_cid()
+    sid = s.get_id()
     assert s == row1.search_row(sid)
-    assert s2 == row1.search_row(s2.get_cid())
+    assert s2 == row1.search_row(s2.get_id())
     assert row1.search_row(1) is None
 
 
 def test_find_seats():
     test1 = row1.find_seats(req_num=3)
-
     assert test1[0].get_name() == 5
     assert test1[1].get_name() == 4
     assert test1[2].get_name() == 3
@@ -45,7 +44,7 @@ def test_bought_seat():
 
 
 def test_seat_to_dict():
-    assert sorted(s1.to_dict().keys()) == ['cid', 'name', 'status']
+    assert sorted(list(s1.to_dict().keys())) == ['cid', 'seat', 'status']
 
 
 def test_row_to_dict():
@@ -54,13 +53,13 @@ def test_row_to_dict():
 
 def test_order_seats():
     seats = row1.find_seats(req_num=2)
-    cids = list(map(lambda x: x.get_cid(), seats))
+    cids = list(map(lambda x: x.get_id(), seats))
     row1.order_seats(cids)
 
     r = row1.get_seats()
     if r is not None:
         while r.r_seat is not None:
-            if r.get_cid() in cids:
+            if r.get_id() in cids:
                 assert r.check_availability() is False
             r = r.r_seat
 

@@ -62,5 +62,5 @@ class ShowInfo:
             "name": self.get_name(),
             "web": self.get_web(),
             "date": str(self.get_date()),
-            "time": str(self.get_time())
+            "time": str(self.get_time())[:7]
         }

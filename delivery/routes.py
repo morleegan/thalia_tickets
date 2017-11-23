@@ -28,7 +28,8 @@ def show_req_all():
 def req_view(wid):
     if request.method == 'PUT':
         content = request.get_json()
-        return jsonify(main.put_show(wid=wid, show_info=content['show_info'], seating=content['seating_info']))
+        main.put_show(wid=wid, show_info=content['show_info'], seating=content['seating_info'])
+        return ''
     else:
         s = main.get_shows(wid)
         s['seating_info'] = list(map(lambda x: Helper.delete_keys(x, ['section_name', 'seating']), s['seating_info']))
@@ -45,14 +46,15 @@ def req_show_section_by_sid(wid, sid):
     return jsonify(main.get_show_section_by_id(wid=wid, sid=sid))
 
 
-# @show.route('/shows/<int:wid>/donations/<int:did>', methods=['GET'])
-# def req_show_donation(wid, did):
-#     return "show: " + str(wid) + " donation: " + str(did)
-#
-#
-# @show.route('/shows/<int:wid>/donations', methods=['POST'])
-# def req_all_donations(wid):
-#     pass
+@show.route('/shows/<wid>/donations/<did>', methods=['GET'])
+def req_show_donation(wid, did):
+    return jsonify(main.get_donations_by_id(wid, did))
+
+
+@show.route('/shows/<wid>/donations', methods=['POST'])
+def req_all_donations(wid):
+    content = request.get_json()
+    return jsonify(main.post_get_donations(patron=content['patron_info'], amount=content['count'], wid=wid))
 
 
 """ SEATING CONTROLLER """
@@ -64,7 +66,8 @@ def seating_view_all():
         wid = request.args['show']
         sid = request.args['section']
         count = request.args['count']
-        return jsonify(main.show_seats_request(wid=wid, sid=sid, count=count))
+        # return jsonify(main.show_seats_request(wid=wid, sid=sid, count=count))
+        return jsonify(None)
     return jsonify(main.get_seating())
 
 
@@ -72,47 +75,47 @@ def seating_view_all():
 def req_view(sid):
     s = main.get_seating(sid=sid)
     for r in s['seating']:
-        r['seats'] = sorted(list(map(lambda x: x['name'], r['seats'])))
+        r['seats'] = sorted(list(map(lambda x: x['seat'], r['seats'])))
     return jsonify(s)
 
 
-# """ Ticket Controller """
-#
-#
-# @ticket.route('/tickets/<tid>', methods=['GET'])
-# def req_view_t(tid):
-#     return "ticket " + str(tid)
-#
-#
-# @ticket.route('/tickets/', methods=['POST'])
-# def req_view_all_t():
-#     return "ticket index"
-#
-#
-# @ticket.route('/tickets/donations', methods=['GET', 'POST'])
-# def req_ticket_donations():
-#     return "donations"
-#
-#
-# """ search controller """
-#
-#
-# @search.route('/search', methods=['GET'])
-# def req_report():
-#     # search?topic=topicword&key=keyword
-#     topic = request.args.get('topicword', type=str)
-#     key = request.args.get('keyword', type=str)
-#     return "keyword and topic: " + key + " " + topic
-#
-#
-# """ Report Controller """
-#
-#
-# @report.route('/reports', methods=['GET'])
-# def req_view():
-#     return "report index"
-#
-#
+""" Ticket Controller """
+
+
+@ticket.route('/tickets/<tid>', methods=['POST', 'GET'])
+def req_view_t(tid):
+    if request.method == 'POST':
+        content = request.get_json()
+        return jsonify(main.post_ticket(tid, content['status']))
+    return jsonify(main.get_tickets(tid))
+
+
+@ticket.route('/tickets/donations', methods=['POST'])
+def req_ticket_donations():
+    content = request.get_json()
+    tid = content['tickets']
+    return jsonify(main.post_donate(tid_list=tid))
+
+
+""" search controller """
+
+
+@search.route('/search', methods=['GET'])
+def req_report():
+    # search?topic=topicword&key=keyword
+    topic = request.args.get('topic', type=str)
+    key = request.args.get('key', type=str)
+    return jsonify(main.search(topic, key))
+
+
+""" Report Controller """
+
+
+@report.route('/reports', methods=['GET'])
+def req_view():
+    return jsonify(main.get_reports())
+
+
 # @report.route('/reports/<mrid>', methods=['GET'])
 # def req_report(mrid):
 #     # ?show={wid} | ?start_date=YYYYMMDD&end_date=YYYYMMDD
@@ -121,8 +124,8 @@ def req_view(sid):
 #     end = request.args.get('end_date', type=str)
 #     return "start: " + start
 #
-#
-# """ Order Controller """
+
+""" Order Controller """
 
 
 @order.route('/orders', methods=['GET', 'POST'])
@@ -132,18 +135,17 @@ def req_view_all():
         wid = content['wid']
         sid = content['sid']
         seats = content['seats']
-        patron = content['patron']
+        patron = content['patron_info']
         return jsonify(main.post_order(wid, sid, seats, patron))
     else:
         return jsonify(main.get_orders())
 
 
-# @order.route('/orders/<oid>', methods=['GET'])
-# def req_view(oid):
-#     # TODO: solve the finding of order when you have oid, incorrect call
-#     return jsonify(emu.order_by_id_json(oid))
-#
-#
+@order.route('/orders/<oid>', methods=['GET'])
+def req_view(oid):
+    return jsonify(main.get_orders(oid))
+
+
 # @order.route('/orders', methods=['GET'])
 # def req_order_by_dates():
 #     # ?start_date = YYYYMMDD & end_date = YYYYMMDD
