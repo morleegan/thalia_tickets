@@ -48,15 +48,18 @@ class Row(ID):
         """give order_seats a list of cids in the row, buys them"""
         for cid in cid_list:
             seat = self.search_row(cid)
-            seat.bought_seat()
+            if seat is not None:
+                seat.bought_seat()
 
     def find_seats(self, start_id=None, req_num=1):
         """creates a order of seats for a num requested"""
         order = list()
+        r = None
         if start_id:
             r = self.search_row(start_id)
-        else:
+        if r is None:
             r = self.get_seats()
+        start_id = r.get_id()
 
         while r.r_seat is not None:
             if r.check_availability():
@@ -66,7 +69,7 @@ class Row(ID):
             else:
                 order = list()
             r = r.r_seat
-        return None
+        return start_id
 
     def to_dict(self):
         return {

@@ -67,8 +67,12 @@ def seating_view_all():
         sid = request.args['section']
         count = request.args['count']
         start_seat = None
-        if 'starting_seat_id' in request.args.keys():
-            start_seat = request.args['starting_seat_id']
+        return jsonify(main.show_seats_request(wid=wid, sid=sid, count=count, start_id=start_seat))
+    elif sorted(['show', 'section', 'count', 'starting_seat_id']) == sorted(request.args.keys()):
+        wid = request.args['show']
+        sid = request.args['section']
+        count = request.args['count']
+        start_seat = request.args['starting_seat_id']
         return jsonify(main.show_seats_request(wid=wid, sid=sid, count=count, start_id=start_seat))
     return jsonify(main.get_seating())
 
@@ -118,14 +122,20 @@ def req_view():
     return jsonify(list(map(lambda x: x.to_dict(), main.get_reports())))
 
 
-# @report.route('/reports/<mrid>', methods=['GET'])
-# def req_report(mrid):
-#     # ?show={wid} | ?start_date=YYYYMMDD&end_date=YYYYMMDD
-#     wid = request.args.get('show', type=int)
-#     start = request.args.get('start_date', type=str)    # TODO: will have to parse
-#     end = request.args.get('end_date', type=str)
-#     return "start: " + start
-#
+@report.route('/reports/<string:mrid>', methods=['GET'])
+def req_report(mrid):
+    # ?show={wid} | ?start_date=YYYYMMDD&end_date=YYYYMMDD
+    if list(request.args.keys()) == ['show']:
+        wid = request.args.get('show')
+        if not isinstance(wid, list):
+            wid = [wid]
+        return jsonify(main.get_reports(mrid=mrid, show=wid).report())
+    elif sorted(request.args.keys()) == sorted(['start_date', 'end_date']):
+        start = request.args.get('start_date', type=str)
+        end = request.args.get('end_date', type=str)
+        return jsonify(main.get_reports(mrid=mrid, start=start, end=end).report())
+    return jsonify(main.get_reports(mrid=mrid).report())
+
 
 """ Order Controller """
 

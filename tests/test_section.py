@@ -24,6 +24,20 @@ def test_to_dict():
     assert sorted(list(section.to_dict().keys())) == sorted(['section_name', 'price', 'seating', 'sid'])
 
 
+def test_find_seats():
+    s.create_section(test)
+    order = s.find_seats(start_id=None, req_num=2)
+    assert len(order) == 2
+    assert isinstance(s.find_seats(start_id=None, req_num=8), str)
+
+
+def test_buy_seats():
+    s.create_section(test)
+    cid = s.get_rows()[0].get_id()
+    s.buy_seats([cid])
+    assert s.buy_seats([cid]) is None
+
+
 def test_set_price():
     section.set_price(3)
     assert section.get_price() == 3
@@ -34,3 +48,5 @@ if __name__ == '__main__':
     test_to_dict()
     test_set_price()
     test_create_section()
+    test_find_seats()
+    test_buy_seats()

@@ -10,7 +10,15 @@ class Section(ID):
         self.__name = name
         self.__price = price
         self.__rows = list()
+        self.__bought_seats = 0
+        self.__seats_total = 0
         self.create_section(rows)
+
+    def get_total_seats(self):
+        return self.__seats_total
+
+    def get_bought_seats(self):
+        return self.__bought_seats
 
     def get_name(self):
         return self.__name
@@ -24,6 +32,12 @@ class Section(ID):
     def set_price(self, new_price):
         self.__price = new_price
 
+    def get_revenue(self):
+        return self.__bought_seats * self.get_price()
+
+    def get_seats_available(self):
+        return self.__seats_total - self.__bought_seats
+
     def create_section(self, rows):
         if not self.__rows:
             row_list = list()
@@ -31,13 +45,17 @@ class Section(ID):
                 # iterates through a list of dicts
                 r_created = Row(row=r['row'], seats=r['seats'])
                 row_list.append(r_created)
+                self.__seats_total += len(r_created.get_seats_as_list())
             self.__rows = row_list
 
     def find_seats(self, start_id=None, req_num=1):
         for row in self.get_rows():
-            order = row.find_seats(start_id=start_id, req_num=req_num)
-            if order is not None:
-                return order
+            return row.find_seats(start_id=start_id, req_num=req_num)
+
+    def buy_seats(self, cid_list):
+        for row in self.get_rows():
+            row.order_seats(cid_list=cid_list)
+        self.__bought_seats += len(cid_list)
 
     def to_dict(self):
         return {
@@ -45,4 +63,14 @@ class Section(ID):
             "section_name": self.get_name(),
             "price": self.get_price(),
             "seating": list(map(lambda x: x.to_dict(), self.get_rows())) if self.get_rows() else list()
+        }
+
+    def report(self):
+        return {
+            "sid": self.get_id(),
+            "section_name": self.get_name(),
+            "section_price": self.get_price(),
+            "seats_available": self.get_seats_available(),
+            "seats_sold": self.__bought_seats,
+            "section_revenue": self.get_revenue()
         }

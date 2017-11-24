@@ -18,14 +18,6 @@ def test_search_row():
     assert row1.search_row(1) is None
 
 
-def test_find_seats():
-    test1 = row1.find_seats(req_num=3)
-    assert test1[0].get_name() == 1
-    assert test1[1].get_name() == 2
-    assert test1[2].get_name() == 3
-    assert row1.find_seats(req_num=8) is None
-
-
 def test_get_as_list():
     test = list(map(lambda x: x.get_name(), row1.get_seats_as_list()))
     assert test == sorted([5,4,3,2,1])
@@ -51,13 +43,23 @@ def test_row_to_dict():
     assert sorted(row1.to_dict().keys()) == ['row', 'seats']
 
 
-def test_order_seats():
+def test_find_seats():
     seats = row1.find_seats(req_num=2)
     cids = list(map(lambda x: x.get_name(), seats))
     assert cids == [1, 2]
     cid = row1.get_seats_as_list()[1].get_id()
     assert list(map(lambda s: s.get_name(), row1.find_seats(req_num=3, start_id=cid))) == [2, 3, 4]
+    assert row1.find_seats(req_num=8) is row1.get_seats_as_list()[0].get_id()
 
+def test_order_seats():
+    seats = row1.find_seats(req_num=2)
+    cids = list(map(lambda x: x.get_id(), seats))
+    row1.order_seats(cids)
+    r = row1.get_seats()
+    while r.r_seat is not None:
+        if r.get_id() in cids:
+            assert r.get_status() == 'sold'
+        r = r.r_seat
 
 if __name__ == '__main__':
     test_get_row_number()

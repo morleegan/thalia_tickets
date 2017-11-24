@@ -24,13 +24,23 @@ class Emulate:
             return Helper.delete_keys(sec.to_dict(), ['price'])
         return list(map(lambda x: Helper.delete_keys(x.to_dict(), ['price', 'seating']), seating))
 
-    @staticmethod
-    def get_reports():
-        r = RevenueReport()
-        o = OccupancyReport()
-        d = DonatedReport()
-        reports = [o, r, d]
-        return reports
+    def get_reports(self, mrid=None, show=list(), start=None, end=None):
+        r, o, d = RevenueReport(), OccupancyReport(), DonatedReport()
+        sr = self.shows_list
+        if show:
+            sr = list()
+            for s in show:
+                sr.append(self.get_shows(wid=s))
+        elif start and end:
+            pass
+        if mrid:
+            if mrid == r.get_id():
+                return RevenueReport(shows=sr)
+            if mrid == o.get_id():
+                return OccupancyReport(shows=sr)
+            if mrid == d.get_id():
+                return DonatedReport(shows=sr)
+        return [o, r, d]
 
     def get_tickets(self, tid=None):
         if tid is not None:
@@ -72,7 +82,7 @@ class Emulate:
                         o_dict['show_info'] = si_dict
                         o_dict = Helper.delete_keys(o_dict, ['sid', 'tickets'])
                         orders.append(o_dict)
-            return orders
+        return orders
 
     def get_shows(self, wid=None):
         if wid is not None:
@@ -160,6 +170,9 @@ class Emulate:
     def post_order(self, wid=None, sid=None, seats=None, patron=None):
         patron = Patron(name=patron['name'], phone=patron['phone'], email=patron['email'], cc_num=patron['cc_number'],
                         cc_exp=patron['cc_expiration_date'], bill_add=patron['billing_address'])
+        show = self.get_shows(wid)
+        cids = list(map(lambda x: x['cid'], seats))
+        show.get_seating().find_section(sid).buy_seats(cids)
         s = self.get_show_section_by_id(wid, sid)
         tickets = list(map(lambda x: Ticket(wid=wid, sid=sid, seat=x['seat'], cid=x['cid'], price=s['price']), seats))
         order = Order(wid=wid, tickets=tickets, patron=patron)
@@ -176,9 +189,20 @@ class Emulate:
         show = Helper.get_specific(wid, self.shows_list)
         section = show.get_seating().find_section(sid)
         order = section.find_seats(req_num=count, start_id=start_id)
-        if order:
-            return show.to_dict()
-        return ''
+        s_dict = self.get_show_section_by_id(wid, sid)
+        if not isinstance(order, str):
+            s_dict['starting_seat_id'] = order[0].get_id()
+            s_dict['status'] = 'ok'
+            s_dict['amount_total'] = s_dict['price'] * len(order)
+            s_dict['seating'] = order.to_dict()
+            Helper.delete_keys(s_dict, ['price'])
+        else:
+            status = str("Error: " + str(count) + " contiguous seats not available")
+            s_dict['starting_seat_id'] = order
+            s_dict['status'] = status
+            s_dict['seating'] = list()
+            Helper.delete_keys(s_dict, ['price'])
+        return s_dict
 
     def search(self, topic, key):
         search_list = list()
