@@ -15,10 +15,6 @@ ticket = Ticket(wid=10)
 tickets = [ticket]
 
 
-def test_to_dict():
-    assert donate_test.to_dict().keys() == d.keys()
-
-
 def test_take_ticket():
     leftover = don.take_tickets(tickets)
     leftover = donate_test.take_tickets(leftover)
@@ -27,5 +23,4 @@ def test_take_ticket():
 
 
 if __name__ == '__main__':
-    test_to_dict()
     test_take_ticket()

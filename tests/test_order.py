@@ -46,11 +46,6 @@ def test_date_check():
     assert order.check_date(start='20171123', end='20171123') is True
 
 
-def test_to_dict():
-    assert o.keys() == order.to_dict().keys()
-    assert sorted(patron.to_dict().keys()) == sorted(p.keys())
-    assert t.keys() == ticket.to_dict().keys()
-
 def test_get_total():
     assert order.get_total() == 180
 
@@ -59,7 +54,6 @@ def test_set_status():
     assert ticket.get_status() =='test'
 
 if __name__ == '__main__':
-    test_to_dict()
     test_search()
     test_date_check()
     test_get_total()

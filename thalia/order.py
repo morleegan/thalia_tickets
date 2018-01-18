@@ -37,20 +37,6 @@ class Order(ID):
             total += ticket.get_price()
         return total
 
-    def to_dict(self):
-        show = ShowInfo()
-        return {
-            "oid": self.get_id(),
-            "wid": self.get_wid(),
-            "show_info": show.to_dict(),
-            "date_ordered": str(self.get_date())[:16],
-            "order_amount": self.get_total(),
-            "number_of_tickets": len(self.get_tickets()),
-            "patron_info": self.get_patron().to_dict(),
-            "tickets": list(map(lambda x: x.to_dict(), self.get_tickets())),
-
-        }
-
 
 class Ticket(ID):
     def __init__(self, price=0, wid=0, sid=0, cid=None, seat=None):
@@ -83,14 +69,6 @@ class Ticket(ID):
     def set_status(self, status="open"):
         self.__status = status
 
-    def to_dict(self):
-        return {"tid": self.get_id(),
-                "price": self.get_price(),
-                "status": self.get_status(),
-                "cid": self.get_cid(),
-                "seat": self.get_seat(),
-                }
-
 
 class Patron(ID):
     def __init__(self, name="", email="", phone="", bill_add="", cc_num="", cc_exp=""):
@@ -119,16 +97,3 @@ class Patron(ID):
 
     def get_cc_exp(self):
         return self.__cc_exp
-
-    def cover_cc(self):
-        return 'xxxxxxxxxxxx' + self.get_cc_num()[12:]
-
-    def to_dict(self):
-        return {
-            "name": self.get_name(),
-            "phone": self.get_phone(),
-            "email": self.get_email(),
-            "billing_address": self.get_bill_adr(),
-            "cc_number": self.cover_cc(),
-            "cc_expiration_date": self.get_cc_exp()
-        }

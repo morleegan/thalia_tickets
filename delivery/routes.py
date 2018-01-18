@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from delivery.main import Thalia
-from delivery.convert import show_create_api_v1, show_all_api_v1, show_wid_api_v1, show_section_api_v1
+from delivery.convert import show_create_api_v1, show_all_api_v1, show_wid_api_v1, show_section_api_v1, \
+    seating_with_sid_api_v1, show_donation_create_api_v1, show_donation_api_v1
 
 show = Blueprint('show', __name__)
 seating = Blueprint('seating', __name__)
@@ -41,18 +42,20 @@ def req_show_section(wid):
 
 @show.route('/shows/<wid>/sections/<sid>', methods=['GET'])
 def req_show_section_by_sid(wid, sid):
-    return jsonify(main.get_show_section_by_id(wid=wid, sid=sid))
+    show_returned, section = main.get_show_section_by_id(wid=wid, sid=sid)
+    return jsonify(seating_with_sid_api_v1(show_returned, section))
 
 
 @show.route('/shows/<wid>/donations/<did>', methods=['GET'])
 def req_show_donation(wid, did):
-    return jsonify(main.get_donations_by_id(wid, did))
+    return jsonify(show_donation_api_v1(main.get_donations_by_id(wid, did)))
 
 
 @show.route('/shows/<wid>/donations', methods=['POST'])
 def req_all_donations(wid):
     content = request.get_json()
-    return jsonify(main.post_get_donations(patron=content['patron_info'], amount=content['count'], wid=wid))
+    return jsonify(show_donation_create_api_v1(main.post_get_donations(
+        patron=content['patron_info'], amount=content['count'], wid=wid)))
 
 
 """ SEATING CONTROLLER """

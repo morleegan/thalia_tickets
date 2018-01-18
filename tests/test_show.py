@@ -20,10 +20,6 @@ def test_show_set():
     assert test_show.get_seating() == 3
 
 
-def test_show_to_dict():
-    assert sorted(test_show2.to_dict().keys()) == ["seating_info", "show_info", "wid"]
-
-
 def test_show_info_get():
     assert showinfo.get_name() == "test"
     assert showinfo.get_web() == "test"
@@ -45,7 +41,6 @@ def test_show_info_set_all():
 if __name__ == '__main__':
     test_show_get()
     test_show_set()
-    test_show_to_dict()
 
     test_show_info_get()
     test_show_info_to_dict()

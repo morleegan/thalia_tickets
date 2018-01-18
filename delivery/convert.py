@@ -3,8 +3,12 @@ def show_info_helper_v1(show_info):
             "name": show_info.get_name(),
             "web": show_info.get_web(),
             "date": show_info.get_date(),
-            "time": show_info.get_time()
+            "time": str(show_info.get_time())
             }
+
+
+def cover_cc_helper_v1(self):
+    return 'xxxxxxxxxxxx' + self.get_cc_num()[12:]
 
 
 def patron_helper_v1(patron):
@@ -22,7 +26,7 @@ def seating_price_helper_v1(seating):
     return list(map(lambda sec: {
         "sid": sec.get_id(),
         "price": sec.get_price()
-    }, seating))
+    }, seating.get_seating()))
 
 
 def seating_row_helper_v1(row_list):
@@ -85,9 +89,21 @@ def seating_with_sid_api_v1(show, section):
 
 
 def show_donation_create_api_v1(donation):
-    """POST http://localhost:8080/thalia/shows/308/donations"""
+    """POST http://localhost:8080/thalia/shows/{wid}/donations"""
     return {
         "did": donation.get_id()
+    }
+
+
+def show_donation_api_v1(donation):
+    """GET http://localhost:8080/thalia/shows/{wid}/donations/{did}"""
+    return {
+        "did": donation.get_id(),
+        "wid": donation.get_wid(),
+        "count": len(donation.get_tickets),
+        "status": donation.get_status(),
+        "tickets": donation.get_tickets(),
+        "patron_info": patron_helper_v1(donation.get_patron())
     }
 
 
@@ -167,3 +183,57 @@ def ticket_post_api_v1(ticket):
 #     s_dict['seating'] = list()
 #     Helper.delete_keys(s_dict, ['price'])
 # return s_dict
+
+# def report(self):
+#     return {
+#         "mrid": self.get_id(),
+#         "name": self.get_name(),
+#         "start_date": str(self.get_start_date()),
+#         "end_date": str(self.get_end_date()),
+#         "total_shows": len(self.get_shows()),
+#         "total_seats": self.get_total_seats(),
+#         "sold_seats": self.to_dict(),
+#         "donated_tickets": 5,
+#         "donated_and_used_tickets": 4,
+#         "donated_and_used_value": 220,
+#         "shows": list(map(lambda x: {
+#             "wid": x.get_id(),
+#             "show_info": x.get_show_info(),
+#             "seats_available": x.get_total_seats() - x.get_sold_total(),
+#             "seats_sold": x.get_sold_total(),
+#             "donated_tickets": 3,
+#             "donated_and_used_tickets": 2,
+#             "donated_and_used_value": 100
+#         }, self.get_shows()))
+#     }
+
+
+# def report(self):
+#     self.calculate_report()
+#     return {
+#         "mrid": self.get_id(),
+#         "name": self.get_name(),
+#         "total_shows": len(self.get_shows()),
+#         "total_seats": self.get_total_seats(),
+#         "sold_seats": self.get_total_sold(),
+#         "overall_revenue": self.get_rev(),
+#         "shows": list(map(lambda s: {
+#             "wid": s.get_id(),
+#             "show_info": s.get_show_info() if isinstance(s.get_show_info(), dict) else s.get_show_info().to_dict(),
+#             "sections": list(map(lambda x: x.report(), s.get_seating().get_seating()))
+#         }, self.get_shows()))
+#     }
+
+# def to_dict(self):
+#     show = ShowInfo()
+#     return {
+#         "oid": self.get_id(),
+#         "wid": self.get_wid(),
+#         "show_info": show.to_dict(),
+#         "date_ordered": str(self.get_date())[:16],
+#         "order_amount": self.get_total(),
+#         "number_of_tickets": len(self.get_tickets()),
+#         "patron_info": self.get_patron().to_dict(),
+#         "tickets": list(map(lambda x: x.to_dict(), self.get_tickets())),
+#
+#     }

@@ -37,14 +37,6 @@ class Show(ID):
             self.__total_seats += sec.get_total_seats()
             self.__total_sold += sec.get_bought_seats()
 
-    def to_dict(self):
-        return {
-            "wid": self.get_id(),
-            "show_info": self.get_show_info().to_dict() if not isinstance(self.get_show_info(),                                                               dict) else self.get_show_info(),
-            "seating_info": self.get_seating().to_dict() if not isinstance(self.get_seating(),
-                                                                       dict) else self.get_seating()
-        }
-
 
 class ShowInfo:
     def __init__(self, name=None, web=None, date=None, time=None):
@@ -70,11 +62,3 @@ class ShowInfo:
         self.__web = web
         self.__date = datetime.datetime.strptime(date, '%Y-%m-%d').date() if date else datetime.date.today()
         self.__time = datetime.datetime.strptime(time, '%H:%M').time() if time else datetime.time()
-
-    def to_dict(self):
-        return {
-            "name": self.get_name(),
-            "web": self.get_web(),
-            "date": str(self.get_date()),
-            "time": str(self.get_time())[:7]
-        }

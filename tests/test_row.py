@@ -35,14 +35,6 @@ def test_bought_seat():
     assert s1.get_status() == "sold"
 
 
-def test_seat_to_dict():
-    assert sorted(list(s1.to_dict().keys())) == ['cid', 'seat', 'status']
-
-
-def test_row_to_dict():
-    assert sorted(row1.to_dict().keys()) == ['row', 'seats']
-
-
 def test_find_seats():
     seats = row1.find_seats(req_num=2)
     cids = list(map(lambda x: x.get_name(), seats))
@@ -50,6 +42,7 @@ def test_find_seats():
     cid = row1.get_seats_as_list()[1].get_id()
     assert list(map(lambda s: s.get_name(), row1.find_seats(req_num=3, start_id=cid))) == [2, 3, 4]
     assert row1.find_seats(req_num=8) is row1.get_seats_as_list()[0].get_id()
+
 
 def test_order_seats():
     seats = row1.find_seats(req_num=2)
@@ -68,6 +61,4 @@ if __name__ == '__main__':
     test_get_as_list()
     test_check_availability()
     test_bought_seat()
-    test_seat_to_dict()
-    test_row_to_dict()
     test_order_seats()

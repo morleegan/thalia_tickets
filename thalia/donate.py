@@ -38,14 +38,3 @@ class Donate(ID):
                 self.get_tickets().append(t)
                 tickets.remove(t)
         return tickets
-
-    def to_dict(self):
-        pat = self.get_patron().to_dict()
-        pat['cc_number'] = self.get_patron().get_cc_num()
-        return {
-                "did": self.get_id(),
-                "wid": self.get_wid(),
-                "count": self.get_amount(),
-                "status": self.get_status(),
-                "tickets": list(map(lambda x: x.get_id(), self.get_tickets())),
-                "patron_info": pat}

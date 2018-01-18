@@ -56,21 +56,3 @@ class Section(ID):
         for row in self.get_rows():
             row.order_seats(cid_list=cid_list)
         self.__bought_seats += len(cid_list)
-
-    def to_dict(self):
-        return {
-            "sid": self.get_id(),
-            "section_name": self.get_name(),
-            "price": self.get_price(),
-            "seating": list(map(lambda x: x.to_dict(), self.get_rows())) if self.get_rows() else list()
-        }
-
-    def report(self):
-        return {
-            "sid": self.get_id(),
-            "section_name": self.get_name(),
-            "section_price": self.get_price(),
-            "seats_available": self.get_seats_available(),
-            "seats_sold": self.__bought_seats,
-            "section_revenue": self.get_revenue()
-        }

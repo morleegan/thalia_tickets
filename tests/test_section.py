@@ -20,10 +20,6 @@ def test_check_sid():
     assert s2.check_id(2) is False
 
 
-def test_to_dict():
-    assert sorted(list(section.to_dict().keys())) == sorted(['section_name', 'price', 'seating', 'sid'])
-
-
 def test_find_seats():
     s.create_section(test)
     order = s.find_seats(start_id=None, req_num=2)
@@ -45,7 +41,6 @@ def test_set_price():
 
 if __name__ == '__main__':
     test_check_sid()
-    test_to_dict()
     test_set_price()
     test_create_section()
     test_find_seats()

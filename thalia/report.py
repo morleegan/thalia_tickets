@@ -41,12 +41,6 @@ class Report(ID):
             self.__total_seats += show.get_total_seats()
             self.__total_sold += show.get_sold_total()
 
-    def to_dict(self):
-        return {
-            "mrid": self.get_id(),
-            "name": self.get_name()
-        }
-
 
 class OccupancyReport(Report):
     def __init__(self, shows=list()):
@@ -96,46 +90,9 @@ class RevenueReport(Report):
             for sec in show.get_seating().get_seating():
                 self.__revenue += sec.get_revenue()
 
-    def report(self):
-        self.calculate_report()
-        return {
-            "mrid": self.get_id(),
-            "name": self.get_name(),
-            "total_shows": len(self.get_shows()),
-            "total_seats": self.get_total_seats(),
-            "sold_seats": self.get_total_sold(),
-            "overall_revenue": self.get_rev(),
-            "shows": list(map(lambda s: {
-                "wid": s.get_id(),
-                "show_info": s.get_show_info() if isinstance(s.get_show_info(), dict) else s.get_show_info().to_dict(),
-                "sections": list(map(lambda x: x.report(), s.get_seating().get_seating()))
-            }, self.get_shows()))
-        }
-
 
 class DonatedReport(Report):
     def __init__(self, shows=list()):
         Report.__init__(self, new_id='803', name="Donated tickets report", shows=shows)
 
-    def report(self):
-        return {
-            "mrid": self.get_id(),
-            "name": self.get_name(),
-            "start_date": str(self.get_start_date()),
-            "end_date": str(self.get_end_date()),
-            "total_shows": len(self.get_shows()),
-            "total_seats": self.get_total_seats(),
-            "sold_seats": self.to_dict(),
-            "donated_tickets": 5,
-            "donated_and_used_tickets": 4,
-            "donated_and_used_value": 220,
-            "shows": list(map(lambda x: {
-                "wid": x.get_id(),
-                "show_info": x.get_show_info(),
-                "seats_available": x.get_total_seats() - x.get_sold_total(),
-                "seats_sold": x.get_sold_total(),
-                "donated_tickets": 3,
-                "donated_and_used_tickets": 2,
-                "donated_and_used_value": 100
-            }, self.get_shows()))
-        }
+

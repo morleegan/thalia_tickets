@@ -63,7 +63,9 @@ class Thalia:
 
     def get_show_section_by_id(self, wid=0, sid=0):
         show = self.get_shows(wid=wid)
-        return show, sid
+        theater = show.get_seating()
+        section = theater.find_section(sid=sid)
+        return show, section
 
     def post_get_donations(self, patron=None, amount=0, wid=0):
         patron = Patron(name=patron['name'], phone=patron['phone'], email=patron['email'],

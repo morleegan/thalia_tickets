@@ -250,6 +250,3 @@ class Theater:
         for s in self.get_seating():
             if s.check_id(sid):
                 return s
-
-    def to_dict(self):
-        return list(map(lambda x: x.to_dict(), self.get_seating()))

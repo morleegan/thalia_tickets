@@ -71,12 +71,6 @@ class Row(ID):
             r = r.r_seat
         return start_id
 
-    def to_dict(self):
-        return {
-            "row": self.get_id(),
-            "seats": list(map(lambda x: x.to_dict(), self.get_seats_as_list()))
-        }
-
 
 class Seat(ID):
     """Seat class: nodes of a linked list"""
@@ -103,10 +97,3 @@ class Seat(ID):
     def bought_seat(self):
         """change status to sold"""
         self.__status = "sold"
-
-    def to_dict(self):
-        return {
-            "cid": self.get_id(),
-            "seat": self.get_name(),
-            "status": self.get_status()
-        }

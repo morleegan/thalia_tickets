@@ -1,15 +1,6 @@
 import uuid
 import re
 
-#
-# class Helper:
-#     @staticmethod
-#     def delete_keys(dic=dict(), key_list=list()):
-#         for key in key_list:
-#             if key in dic.keys():
-#                 del dic[key]
-#         return dic
-
 
 class ID:
     def __init__(self, new_id=None):
