@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
-from delivery.main import Emulate
-from helpers.helper import Helper
+from delivery.main import Thalia
+from delivery.convert import show_create_api_v1, show_all_api_v1, show_wid_api_v1, show_section_api_v1
 
 show = Blueprint('show', __name__)
 seating = Blueprint('seating', __name__)
@@ -9,7 +9,7 @@ search = Blueprint('search', __name__)
 report = Blueprint('report', __name__)
 order = Blueprint('order', __name__)
 
-main = Emulate()
+main = Thalia()
 
 
 @show.route('/shows', methods=['GET', 'POST'])
@@ -17,11 +17,11 @@ def show_req_all():
     if request.method == 'POST':
         content = request.get_json()
         showinfo = content['show_info']
-        seating = content['seating_info']
-        show = main.post_show(show_info=showinfo, seating=seating)
-        return jsonify(show)
+        seat = content['seating_info']
+        s = main.post_show(show_info=showinfo, seating=seat)
+        return jsonify(show_create_api_v1(s))
     else:
-        return jsonify(main.get_shows())
+        return jsonify(show_all_api_v1(main.get_shows()))
 
 
 @show.route('/shows/<wid>', methods=['GET', 'PUT'])
@@ -31,14 +31,12 @@ def req_view(wid):
         main.put_show(wid=wid, show_info=content['show_info'], seating=content['seating_info'])
         return ''
     else:
-        s = main.get_shows(wid).to_dict()
-        s['seating_info'] = list(map(lambda x: Helper.delete_keys(x, ['section_name', 'seating']), s['seating_info']))
-        return jsonify(s)
+        return jsonify(show_wid_api_v1(main.get_shows(wid)))
 
 
 @show.route('/shows/<wid>/sections', methods=['GET'])
 def req_show_section(wid):
-    return jsonify(main.get_show_section(wid))
+    return jsonify(show_section_api_v1(main.get_shows(wid)))
 
 
 @show.route('/shows/<wid>/sections/<sid>', methods=['GET'])

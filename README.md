@@ -8,6 +8,7 @@ API: http://www.cs.iit.edu/~virgil/cs445/mail.fall2017/project/project-api.html
     sudo apt-install pip3 
     pip3 install flask 
     pip3 install nose2 
+    pip3 install numpy // for testing
 
 ## Application:
     python3 thalia.py 
