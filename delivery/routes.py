@@ -1,7 +1,7 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, render_template
 from delivery.main import Thalia
 from delivery.convert import show_create_api_v1, show_all_api_v1, show_wid_api_v1, show_section_api_v1, \
-    seating_with_sid_api_v1, show_donation_create_api_v1, show_donation_api_v1
+    seating_with_sid_api_v1, show_donation_create_api_v1, show_donation_api_v1, seating_all_api_v1
 
 show = Blueprint('show', __name__)
 seating = Blueprint('seating', __name__)
@@ -13,6 +13,11 @@ order = Blueprint('order', __name__)
 main = Thalia()
 
 
+@show.route('/', methods=['GET'])
+def index():
+    return render_template('index.html')
+
+
 @show.route('/shows', methods=['GET', 'POST'])
 def show_req_all():
     if request.method == 'POST':
@@ -22,14 +27,17 @@ def show_req_all():
         s = main.post_show(show_info=showinfo, seating=seat)
         return jsonify(show_create_api_v1(s))
     else:
-        return jsonify(show_all_api_v1(main.get_shows()))
+        json = jsonify(show_all_api_v1(main.get_shows()))
 
 
-@show.route('/shows/<wid>', methods=['GET', 'PUT'])
+@show.route('/shows/<wid>', methods=['GET', 'PUT', 'DELETE'])
 def req_view(wid):
     if request.method == 'PUT':
         content = request.get_json()
         main.put_show(wid=wid, show_info=content['show_info'], seating=content['seating_info'])
+        return ''
+    elif request.method == 'DELETE':
+        main.delete_show(wid=wid)
         return ''
     else:
         return jsonify(show_wid_api_v1(main.get_shows(wid)))
@@ -75,15 +83,12 @@ def seating_view_all():
         count = request.args['count']
         start_seat = request.args['starting_seat_id']
         return jsonify(main.show_seats_request(wid=wid, sid=sid, count=count, start_id=start_seat))
-    return jsonify(main.get_seating())
+    return jsonify(seating_all_api_v1(main.get_seating()))
 
 
-@seating.route('/seating/<sid>', methods=['GET'])
+@seating.route('/seating/<sid>', methods=['GET', 'POST', 'PUT', 'DELETE'])
 def req_view(sid):
-    s = main.get_seating(sid=sid)
-    for r in s['seating']:
-        r['seats'] = sorted(list(map(lambda x: x['seat'], r['seats'])))
-    return jsonify(s)
+    return jsonify(main.get_seating(sid=sid))
 
 
 """ Ticket Controller """

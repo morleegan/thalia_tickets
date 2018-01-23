@@ -1,4 +1,4 @@
-from helpers.helper import ID
+from thalia.id import ID
 from thalia.order import Patron
 
 

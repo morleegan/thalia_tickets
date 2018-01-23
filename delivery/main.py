@@ -3,7 +3,6 @@ from thalia.theater import Theater
 from thalia.order import Ticket, Order, Patron
 from thalia.report import RevenueReport, OccupancyReport, DonatedReport
 from thalia.donate import Donate
-""" holds all the classes made by the rest"""
 
 
 class Thalia:
@@ -150,9 +149,20 @@ class Thalia:
                         search_list.append(s)
         return search_list
 
+    def delete_show(self, wid):
+        remove_specific(wid, self.shows_list)
+
 
 def get_specific(id=0, obj_list=list()):
     """finds specified object specified by id"""
     for obj in obj_list:
             if obj.check_id(id):
                 return obj
+
+
+def remove_specific(id=0, obj_list=list()):
+    """finds specific object and removes it from list"""
+    for obj in obj_list:
+        if obj.check_id(id):
+            obj_list.remove(obj)
+            break

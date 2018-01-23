@@ -1,7 +1,6 @@
-import uuid
 import datetime
 
-from helpers.helper import ID
+from thalia.id import ID
 
 
 class Show(ID):

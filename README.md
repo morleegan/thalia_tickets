@@ -1,21 +1,21 @@
 # Thalia Tickets 
+A website that you can buy and sell tickets on. 
 
+## Frontend information: 
+Continuation of the assignment after completion. Using Flask, Jinja2, to create templates to display the backend.
+
+    localhost:8080/thalia
+
+## Backend information: 
 API: http://www.cs.iit.edu/~virgil/cs445/mail.fall2017/project/project-api.html
 
-## With a fresh Ubuntu: 
-    sudo apt-install python3.6
-    // should be version 3.6.2 
-    sudo apt-install pip3 
-    pip3 install flask 
-    pip3 install nose2 
-    pip3 install numpy // for testing
-
-## Application:
+### Application:
     python3 thalia.py 
-    localhost:8080/thalia
+    
 Follow the requirements.txt to know what you need to run all of the parts. 
 
-## Unit testing:
-    nose2 
+### Unit testing:
+Test Driven Development (TDD), with testing coverage over 80%. To see the coverage and tests use the command below.
+
     nose2 --with-coverage 
     

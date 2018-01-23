@@ -1,5 +1,6 @@
-from helpers.helper import ID
 from datetime import datetime
+
+from thalia.id import ID
 
 
 class Report(ID):

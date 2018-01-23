@@ -1,4 +1,4 @@
-from helpers.helper import ID
+from thalia.id import ID
 
 
 class Row(ID):

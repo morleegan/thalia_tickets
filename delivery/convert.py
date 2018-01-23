@@ -22,6 +22,10 @@ def patron_helper_v1(patron):
     }
 
 
+def patron_safe_cc_helper_f1(patron):
+    return patron_helper_v1(patron=patron).update({"cc_number": cover_cc_helper_v1(patron)})
+
+
 def seating_price_helper_v1(seating):
     return list(map(lambda sec: {
         "sid": sec.get_id(),
@@ -100,10 +104,41 @@ def show_donation_api_v1(donation):
     return {
         "did": donation.get_id(),
         "wid": donation.get_wid(),
-        "count": len(donation.get_tickets),
+        "count": donation.get_amount(),
         "status": donation.get_status(),
         "tickets": donation.get_tickets(),
         "patron_info": patron_helper_v1(donation.get_patron())
+    }
+
+
+def seating_all_api_v1(sections):
+    """GET http://localhost:8080/thalia/seating"""
+    return list(map(lambda sec: {
+        "sid": sec.get_id(),
+        "section_name": sec.get_name()
+    }, sections.get_seating()))
+
+
+def seating_sid_api_v1(section):
+    """GET http://localhost:8080/thalia/seating/{sid}"""
+    return {
+        "sid": section.get_id(),
+        "section_name": section.get_name(),
+        "seating": seating_row_helper_v1(section.get_rows())
+    }
+
+
+def seating_request_api_v1(show, section):
+    # TODO
+    return {
+        "wid": show.get_id(),
+        "show_info": show_info_helper_v1(show.get_show_info()),
+        "sid": section.get_id(),
+        "section_name": section.get_name(),
+        "starting_seat_id": "202",  # fill in
+        "status": "ok",             # fill in
+        "total_amount": 180,        # fill in
+        "seating": seating_row_helper_v1(section.get_rows())
     }
 
 
@@ -112,77 +147,6 @@ def ticket_post_api_v1(ticket):
         "tid": ticket.get_id(),
         "status": ticket.get_status()}
 
-
-# show_sec = show_sec.to_dict()
-# if show_sec == "does not exist":
-#     return show_sec
-# seating = show_sec.get('seating_info')
-# for sec in seating:
-#     if sec["sid"] == str(sid):
-#         s = {"wid": wid, "show_info": show_sec.get('show_info')}
-#         s.update(sec)
-#         return s
-
-# show section
-# return list(map(lambda x: Helper.delete_keys(x.to_dict(), ['seating_info']), self.shows_list)) if \
-#     self.shows_list else list()
-
-# order by date
-# for s in self.shows_list:
-#     if s.check_id(o.get_wid()):
-#         o_dict = o.to_dict()
-#         si_dict = s.get_show_info()
-#         o_dict['show_info'] = si_dict
-#         o_dict = Helper.delete_keys(o_dict, ['sid', 'tickets'])
-
-# order
-# if order:
-#     show = self.get_shows(order.get_wid())
-#     show = show.to_dict()
-#     o_dict = order.to_dict()
-#     o_dict = Helper.delete_keys(o_dict, ['sid', 'number_of_tickets'])
-#     o_dict['tickets'] = list(map(lambda t: Helper.delete_keys(t, ['cid', 'seat', 'price']),
-#                                  o_dict['tickets']))
-#     o_dict['show_info'] = show['show_info']
-#     return o_dict
-# return "does not exist"
-
-# post order
-# order_re = order.to_dict()
-#         order_re['show_info'] = s['show_info']
-#         order_re = Helper.delete_keys(order_re, ['patron_info', 'number_of_tickets'])
-#         order_re['tickets'] = list(map(lambda t: t['tid'], order_re['tickets']))
-#         return order_re
-
-# for o in self.orders_list:
-#     for s in self.shows_list:
-#         if s.check_id(o.get_wid()):
-#             o_dict = o.to_dict()
-#             si_dict = s.get_show_info()
-#             o_dict['show_info'] = si_dict
-#             o_dict = Helper.delete_keys(o_dict, ['sid', 'tickets'])
-#             orders.append(o_dict)
-
-# search
-# if search_list:
-#     return {(str(topic) + 's'): list(map(lambda x: Helper.delete_keys(x.to_dict(), ['tickets', 'sid']),
-#                                          search_list))}
-
-# seating by request
-#  s_dict = self.get_show_section_by_id(wid, sid)
-# if not isinstance(order, str):
-#     s_dict['starting_seat_id'] = order[0].get_id()
-#     s_dict['status'] = 'ok'
-#     s_dict['amount_total'] = s_dict['price'] * len(order)
-#     s_dict['seating'] = order.to_dict()
-#     Helper.delete_keys(s_dict, ['price'])
-# else:
-#     status = str("Error: " + str(count) + " contiguous seats not available")
-#     s_dict['starting_seat_id'] = order
-#     s_dict['status'] = status
-#     s_dict['seating'] = list()
-#     Helper.delete_keys(s_dict, ['price'])
-# return s_dict
 
 # def report(self):
 #     return {

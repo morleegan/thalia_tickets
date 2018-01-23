@@ -1,5 +1,5 @@
+from thalia.id import ID
 from thalia.row import Row
-from helpers.helper import ID
 
 
 class Section(ID):

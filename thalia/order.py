@@ -1,7 +1,6 @@
 import datetime
 
-from helpers.helper import ID
-from thalia.show import ShowInfo
+from thalia.id import ID
 
 
 class Order(ID):
